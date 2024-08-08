@@ -15,7 +15,7 @@ jobs:
         build-type: [Debug, Release]
         generator: [ "Visual Studio 17 2022" ]
         arch: [ "Win32", "x64" ]
-        toolset: [ "v143", "v142", "v141" ]
+        toolset: [ "v143", "v142" ]
       fail-fast: false
     
     name: "MSVC ${{ matrix.toolset }} ${{ matrix.arch }} [${{ matrix.build-type }}] on ${{ matrix.os }}"
@@ -25,7 +25,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
