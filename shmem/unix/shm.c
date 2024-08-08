@@ -709,6 +709,47 @@ APR_PERMS_SET_IMPLEMENT(shm)
         return errno;
     }
     return APR_SUCCESS;
+#elif APR_USE_SHMEM_MMAP_SHM
+    apr_shm_t *shm = (apr_shm_t *)theshm;
+    const char *shm_name;
+    int fd;
+    apr_status_t rv;
+
+    if (!shm->filename)
+        return APR_ENOTIMPL;
+
+    shm_name = make_shm_open_safe_name(shm->filename, shm->pool);
+
+    fd = shm_open(shm_name, O_RDWR, 0);
+    if (fd == -1)
+        return errno;
+
+    if (fchown(fd, uid, gid)) {
+        rv = errno;
+        close(fd);
+        return rv;
+    }
+
+    if (fchmod(fd, apr_unix_perms2mode(perms))) {
+        rv = errno;
+        close(fd);
+        return rv;
+    }
+    close(fd);
+    return APR_SUCCESS;
+#elif APR_USE_SHMEM_MMAP_TMP
+    apr_shm_t *shm = (apr_shm_t *)theshm;
+
+    if (!shm->filename)
+        return APR_ENOTIMPL;
+
+    if (chown(shm->filename, uid, gid))
+        return errno;
+
+    if (chmod(shm->filename, apr_unix_perms2mode(perms)))
+        return errno;
+
+    return APR_SUCCESS;
 #else
     return APR_ENOTIMPL;
 #endif
