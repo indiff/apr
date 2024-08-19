@@ -43,7 +43,7 @@ OPTION(APR_HAVE_IPV6        "IPv6 support"                 ON)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"  ON)
 OPTION(APR_BUILD_TESTAPR    "Build the test suite"         OFF)
 OPTION(APR_BUILD_SHARED     "Build shared libraries"       ON)
-OPTION(APR_BUILD_STATIC     "Build static libraries."      ON)
+OPTION(APR_BUILD_STATIC     "Build static libraries"       ON)
 OPTION(TEST_STATIC_LIBS     "Test programs use APR static libraries instead of shared libraries?" OFF)
 SET(MIN_WINDOWS_VER             "Vista" 
     CACHE STRING "Minimum Windows version")
