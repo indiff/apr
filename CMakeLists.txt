@@ -57,7 +57,7 @@ IF(NOT APR_BUILD_SHARED AND NOT APR_BUILD_STATIC)
 ENDIF()
 
 IF(NOT APR_BUILD_STATIC AND TEST_STATIC_LIBS)
-  MESSAGE(FATAL_ERROR "APR_BUILD_STATIC have been disabled, but TEST_STATIC_LIBS is enabled")
+  MESSAGE(FATAL_ERROR "APR_BUILD_STATIC has been disabled, but TEST_STATIC_LIBS is enabled")
 ENDIF()
 
 # create 1-or-0 representation of feature tests for apr.h
