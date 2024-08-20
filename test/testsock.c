@@ -734,6 +734,102 @@ static void test_zone(abts_case *tc, void *data)
 #endif /* APR_HAVE_IPV6 */
 }
 
+static void test_nonblock_timeout(abts_case *tc, void *data)
+{
+    apr_status_t rv;
+    apr_socket_t *sock;
+    apr_interval_time_t timeout;
+    apr_int32_t nonblock;
+
+    rv = apr_socket_create(&sock, APR_INET, SOCK_STREAM, APR_PROTO_TCP, p);
+    APR_ASSERT_SUCCESS(tc, "Problem creating socket", rv);
+
+    /* By default socket timeout is infinite. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_get()",
+                       apr_socket_timeout_get(sock, &timeout));
+    ABTS_LLONG_EQUAL(tc, -1, timeout);
+
+    /* By default socket is blocking. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_opt_get(APR_SO_NONBLOCK)",
+                       apr_socket_opt_get(sock, APR_SO_NONBLOCK, &nonblock));
+    ABTS_INT_EQUAL(tc, 0, nonblock);
+
+
+    /* Set timeout = 0 (non-blocking). */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_set(0)",
+                       apr_socket_timeout_set(sock, 0));
+
+    /* Timeout should be zero. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_get()",
+                       apr_socket_timeout_get(sock, &timeout));
+    ABTS_LLONG_EQUAL(tc, 0, timeout);
+
+    /* apr_socket_timeout_set() update non-blocking flag. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_opt_get(APR_SO_NONBLOCK)",
+                       apr_socket_opt_get(sock, APR_SO_NONBLOCK, &nonblock));
+    ABTS_INT_EQUAL(tc, 1, nonblock);
+
+
+    /* Set timeout = 2 seconds. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_set(2s)",
+                       apr_socket_timeout_set(sock, apr_time_from_sec(2)));
+
+    /* Timeout should be 2s. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_get()",
+                       apr_socket_timeout_get(sock, &timeout));
+    ABTS_LLONG_EQUAL(tc, apr_time_from_sec(2), timeout);
+
+    /* apr_socket_timeout_set() update non-blocking flag. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_opt_get(APR_SO_NONBLOCK)",
+                       apr_socket_opt_get(sock, APR_SO_NONBLOCK, &nonblock));
+    ABTS_INT_EQUAL(tc, 0, nonblock);
+
+
+    /* Set APR_SO_NONBLOCK = 1. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_opt_set(APR_SO_NONBLOCK, 1)",
+                       apr_socket_opt_set(sock, APR_SO_NONBLOCK, 1));
+
+    /* Timeout should be unmodified (2s). */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_get()",
+                       apr_socket_timeout_get(sock, &timeout));
+    ABTS_LLONG_EQUAL(tc, apr_time_from_sec(2), timeout);
+
+    /* Non-blocking flag should be updated. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_opt_get(APR_SO_NONBLOCK)",
+                       apr_socket_opt_get(sock, APR_SO_NONBLOCK, &nonblock));
+    ABTS_INT_EQUAL(tc, 1, nonblock);
+
+
+    /* Set timeout = 0 again. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_set(0)",
+                       apr_socket_timeout_set(sock, 0));
+
+    /* Timeout should be zero. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_get()",
+                       apr_socket_timeout_get(sock, &timeout));
+    ABTS_LLONG_EQUAL(tc, 0, timeout);
+
+    /* apr_socket_timeout_set() update non-blocking flag. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_opt_get(APR_SO_NONBLOCK)",
+                       apr_socket_opt_get(sock, APR_SO_NONBLOCK, &nonblock));
+    ABTS_INT_EQUAL(tc, 1, nonblock);
+
+
+    /* Set timeout = -1 (Infinite). */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_set(-1)",
+                       apr_socket_timeout_set(sock, -1));
+
+    /* Timeout should be -1. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_timeout_get()",
+                       apr_socket_timeout_get(sock, &timeout));
+    ABTS_LLONG_EQUAL(tc, -1, timeout);
+
+    /* apr_socket_timeout_set() update non-blocking flag. */
+    APR_ASSERT_SUCCESS(tc, "apr_socket_opt_get(APR_SO_NONBLOCK)",
+                       apr_socket_opt_get(sock, APR_SO_NONBLOCK, &nonblock));
+    ABTS_INT_EQUAL(tc, 0, nonblock);
+}
+
 abts_suite *testsock(abts_suite *suite)
 {
     suite = ADD_SUITE(suite)
@@ -752,6 +848,7 @@ abts_suite *testsock(abts_suite *suite)
     abts_run_test(suite, test_nonblock_inheritance, NULL);
     abts_run_test(suite, test_freebind, NULL);
     abts_run_test(suite, test_zone, NULL);
+    abts_run_test(suite, test_nonblock_timeout, NULL);
 #if APR_HAVE_SOCKADDR_UN
     socket_name = UNIX_SOCKET_NAME;
     socket_type = APR_UNIX;
