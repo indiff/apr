@@ -709,7 +709,9 @@ APR_PERMS_SET_IMPLEMENT(shm)
         return errno;
     }
     return APR_SUCCESS;
-#elif APR_USE_SHMEM_MMAP_SHM
+#elif APR_USE_SHMEM_MMAP_SHM && !defined(DARWIN)
+    /* ### This hangs or fails on MacOS, so skipping this for the
+     * ENOTIMPL case there - unclear why or if that's fixable. */
     apr_shm_t *shm = (apr_shm_t *)theshm;
     const char *shm_name;
     int fd;
