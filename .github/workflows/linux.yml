@@ -5,7 +5,7 @@ on:
     branches: [ "*" ]
     tags: [ "*" ]
   pull_request:
-    branches: [ "trunk" ]
+    branches: [ "trunk", "1.7.x" ]
 
 env:
   MARGS: "-j2"
@@ -65,6 +65,9 @@ jobs:
       run: ./buildconf
     - name: configure
       run: ./configure --prefix=/tmp/apr ${{ matrix.config }}
+    - if: ${{ matrix.config-output != '' }}
+      name: check for expected configure output ${{ matrix.config-output }}
+      run: for var in ${{ matrix.config-output }}; do grep "^#define *${var} *1" include/apr.h; done
     - name: make
       run: make $MARGS
     - name: install
