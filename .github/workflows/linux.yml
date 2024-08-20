@@ -17,10 +17,18 @@ jobs:
       matrix:
         include: 
           - name: Default
+            # Check default shm decision logic for Linux:
+            config-output: APR_USE_SHMEM_MMAP_SHM APR_USE_SHMEM_MMAP_ANON
           - name: Static
             config: --enable-static
           - name: Maintainer-mode
             config: --enable-maintainer-mode
+          - name: Named SHM - SysV, Maintainer-mode
+            config: --enable-maintainer-mode --enable-sysv-shm
+            config-output: APR_USE_SHMEM_SHMGET
+          - name: Named SHM - Classic mmap, Maintainer-mode
+            config: --enable-maintainer-mode ac_cv_func_shm_open=no ac_cv_func_shmget=no
+            config-output: APR_USE_SHMEM_MMAP_TMP
           - name: Pool-debug
             config: --enable-pool-debug
           - name: Pool-debug, maintainer-mode
