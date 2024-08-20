@@ -15,7 +15,7 @@ jobs:
         build-type: [Debug, Release]
         generator: [ "Visual Studio 17 2022" ]
         arch: [ "Win32", "x64" ]
-        toolset: [ "v143", "v142", "v141" ]
+        toolset: [ "v143", "v142" ]
         test-static: [ "ON", "OFF" ]
       fail-fast: false
     

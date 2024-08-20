@@ -22,6 +22,8 @@ jobs:
       NOTEST_CFLAGS: ${{ matrix.notest-cflags }}
     name: ${{ matrix.name }}
     steps:
+    - name: Install prerequisites
+      run: brew install libtool autoconf make bash
     - uses: actions/checkout@v4
     - name: buildconf
       run: ./buildconf
