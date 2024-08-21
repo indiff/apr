@@ -396,7 +396,7 @@ static apr_status_t proc_mutex_sysv_timedacquire(apr_proc_mutex_t *mutex,
                             &reltime);
         } while (rc < 0 && errno == EINTR);
         if (rc < 0) {
-            if (errno == EAGAIN) {
+            if (errno == EAGAIN || errno == ETIMEDOUT) {
                 return APR_TIMEUP;
             }
             return errno;
