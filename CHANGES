@@ -1,4 +1,6 @@
                                                      -*- coding: utf-8 -*-
+Changes for APR 1.7.6
+
 Changes for APR 1.7.5
 
   *) Unix: Implement apr_shm_perms_set() for the "POSIX shm_open()"
