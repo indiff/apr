@@ -128,6 +128,7 @@ SET(APR_PUBLIC_HEADERS_STATIC
   include/apr_atomic.h
   include/apr_cstr.h
   include/apr_dso.h
+  include/apr_encode.h
   include/apr_env.h
   include/apr_errno.h
   include/apr_escape.h
