@@ -309,7 +309,7 @@ ENDIF()
 IF (APR_BUILD_SHARED)
   ADD_LIBRARY(${apr_libname} SHARED ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libapr.rc)
   LIST(APPEND install_targets ${apr_libname})
-  LIST(APPEND install_bin_pdb ${PROJECT_BINARY_DIR}/${apr_libname}.pdb)
+  LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:${apr_libname}>)
   TARGET_LINK_LIBRARIES(${apr_libname}
                         PRIVATE ${APR_SYSTEM_LIBS})
   TARGET_COMPILE_DEFINITIONS(${apr_libname}
