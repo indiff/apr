@@ -1,5 +1,6 @@
                                                      -*- coding: utf-8 -*-
 Changes for APR 1.7.6
+  *) CMake: Install include/apr_encode.h. [Ivan Zhakov]
 
 Changes for APR 1.7.5
 
