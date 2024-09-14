@@ -2,6 +2,9 @@
 Changes for APR 1.7.6
   *) CMake: Install include/apr_encode.h. [Ivan Zhakov]
 
+  *) CMake: Fix installation PDB files with multi-config generators.
+     [Ivan Zhakov]
+
 Changes for APR 1.7.5
 
   *) SECURITY: CVE-2023-49582: Apache Portable Runtime (APR):
