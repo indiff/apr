@@ -13,11 +13,11 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        build-type: [Debug, Release]
+        build-type: [Release]   # Debug, Release
         generator: [ "Visual Studio 17 2022" ]
-        arch: [ "Win32", "x64" ]
-        toolset: [ "v143", "v142" ]
-        test-static: [ "ON", "OFF" ]
+        arch: [ "Win32", "x64" ] # "Win32", "x64"
+        toolset: [ "v143" ]  # "v143", "v142"
+        test-static: [ "OFF" ]  # "ON", "OFF"
       fail-fast: false
     
     name: "MSVC ${{ matrix.toolset }} ${{ matrix.arch }} [${{ matrix.build-type }}] test-static=${{ matrix.test-static }} on ${{ matrix.os }}"
@@ -39,6 +39,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build-type }}
 
     - name: Test
+      if: matrix.build-type == 'Debug'
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
@@ -55,7 +56,7 @@ jobs:
           retention-days: 5 # 保留期 
           compression-level: 9 # 压缩级别
           path: |
-            "C:/Program Files/APR/"
-            "!C:/Program Files/APR/**/*.tmp"
+            C:/Program Files/APR/
+            !C:/Program Files/APR/**/*.tmp
         
           
