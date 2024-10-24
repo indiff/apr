@@ -46,3 +46,16 @@ jobs:
 
     - name: Install
       run: cmake --install ${{github.workspace}}/build --config ${{ matrix.build-type }}
+      
+    - name: Archive artifacts for ${{ matrix.build-type }}
+      if: matrix.build-type == 'Release' && matrix.test-static = 'OFF'
+      uses: actions/upload-artifact@v4
+      with:
+          name: apr.${{ matrix.build-type }}.${{ matrix.arch}}
+          retention-days: 5 # 保留期 
+          compression-level: 9 # 压缩级别
+          path: |
+            "C:/Program Files/APR/"
+            "!C:/Program Files/APR/**/*.tmp"
+        
+          
