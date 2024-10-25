@@ -2,10 +2,10 @@ name: Windows
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ "trunk.nossl" ]
     tags: [ "*" ]
   pull_request:
-    branches: [ "trunk" ]
+    branches: [ "trunk.nossl" ]
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows
             arch: x64
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: ON
             dso-build: ON
@@ -24,7 +24,7 @@ jobs:
             os: windows-latest
             triplet: x86-windows
             arch: x86
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: ON
             dso-build: ON
@@ -32,7 +32,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows
             arch: x64
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: ON
             dso-build: ON
@@ -43,7 +43,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows
             arch: x64
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: ON
             dso-build: ON
@@ -54,7 +54,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows
             arch: x64
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: ON
             dso-build: ON
@@ -64,7 +64,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows
             arch: x64
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: ON
             dso-build: OFF
@@ -72,7 +72,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows
             arch: x64
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: ON
             dso-build: OFF
@@ -84,7 +84,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows
             arch: x64
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: ON
             dso-build: ON
@@ -99,7 +99,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows-static
             arch: x64
-            build-type: Debug
+            build-type: Release  # Debug Release
             generator: Ninja
             build-shared: OFF
             dso-build: OFF
@@ -149,6 +149,7 @@ jobs:
         cmake --build ${{github.workspace}}/build --config ${{ matrix.build-type }}
 
     - name: Test
+      if: matrix.build-type == 'Debug'
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
@@ -156,3 +157,15 @@ jobs:
 
     - name: Install
       run: cmake --install ${{github.workspace}}/build --config ${{ matrix.build-type }}
+
+      
+    - name: Archive artifacts for ${{ matrix.build-type }}
+      if: matrix.build-type == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+          name: apr.${{ matrix.build-type }}.${{ matrix.arch}}.${{ matrix.name }}
+          retention-days: 5 # 保留期 
+          compression-level: 9 # 压缩级别
+          path: |
+            C:/Program Files/APR/
+            !C:/Program Files/APR/**/*.tmp
