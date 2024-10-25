@@ -39,6 +39,11 @@ jobs:
             packages: expat
             config: >-
               -DAPR_XML_BACKEND=expat
+              -DAPR_INSTALL_PRIVATE_H=ON
+              -DAPR_HAVE_IPV6=OFF
+              -DINSTALL_PDB=OFF
+              -DAPR_BUILD_TESTAPR=OFF
+              -DAPR_POOL_DEBUG=OFF
           - name: Use Libxml2
             os: windows-latest
             triplet: x64-windows
@@ -50,6 +55,11 @@ jobs:
             packages: libxml2
             config: >-
               -DAPR_XML_BACKEND=libxml2
+              -DAPR_INSTALL_PRIVATE_H=ON
+              -DAPR_HAVE_IPV6=OFF
+              -DINSTALL_PDB=OFF
+              -DAPR_BUILD_TESTAPR=OFF
+              -DAPR_POOL_DEBUG=OFF
           - name: Use XmlLite
             os: windows-latest
             triplet: x64-windows
@@ -60,6 +70,11 @@ jobs:
             dso-build: ON
             config: >-
               -DAPR_XML_BACKEND=xmllite
+              -DAPR_INSTALL_PRIVATE_H=ON
+              -DAPR_HAVE_IPV6=OFF
+              -DINSTALL_PDB=OFF
+              -DAPR_BUILD_TESTAPR=OFF
+              -DAPR_POOL_DEBUG=OFF
           - name: Shared (no DSO)
             os: windows-latest
             triplet: x64-windows
@@ -80,6 +95,11 @@ jobs:
               -DAPU_HAVE_ODBC=OFF
               -DAPU_HAVE_SQLITE3=OFF
               -DAPU_HAVE_CRYPTO=OFF
+              -DAPR_INSTALL_PRIVATE_H=ON
+              -DAPR_HAVE_IPV6=OFF
+              -DINSTALL_PDB=OFF
+              -DAPR_BUILD_TESTAPR=OFF
+              -DAPR_POOL_DEBUG=OFF
           - name: "Shared: All (ODBC + Sqlite3 + PostgreSQL + Crypto + Iconv)"
             os: windows-latest
             triplet: x64-windows
@@ -95,6 +115,11 @@ jobs:
               -DAPU_HAVE_PGSQL=ON
               -DAPU_HAVE_CRYPTO=ON
               -DAPU_HAVE_ICONV=ON
+              -DAPR_INSTALL_PRIVATE_H=ON
+              -DAPR_HAVE_IPV6=OFF
+              -DINSTALL_PDB=OFF
+              -DAPR_BUILD_TESTAPR=OFF
+              -DAPR_POOL_DEBUG=OFF
           - name: "Static: All (ODBC + Sqlite3 + PostgreSQL + Crypto + Iconv)"
             os: windows-latest
             triplet: x64-windows-static
@@ -110,6 +135,11 @@ jobs:
               -DAPU_HAVE_PGSQL=ON
               -DAPU_HAVE_CRYPTO=ON
               -DAPU_HAVE_ICONV=ON
+              -DAPR_INSTALL_PRIVATE_H=ON
+              -DAPR_HAVE_IPV6=OFF
+              -DINSTALL_PDB=OFF
+              -DAPR_BUILD_TESTAPR=OFF
+              -DAPR_POOL_DEBUG=OFF
       fail-fast: false
 
     name: ${{ matrix.name }}
@@ -167,5 +197,5 @@ jobs:
           retention-days: 5 # 保留期 
           compression-level: 9 # 压缩级别
           path: |
-            C:/Program Files/APR/
-            !C:/Program Files/APR/**/*.tmp
+            C:/Program Files (x86)/APR
+            !C:/Program Files (x86)/APR/**/*.tmp
