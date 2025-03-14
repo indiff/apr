@@ -16,7 +16,7 @@ jobs:
             os: windows-latest
             triplet: x64-windows
             arch: x64
-            build-type: Debug
+            build-type: Realse
             generator: Ninja
             build-shared: ON
             dso-build: ON
