@@ -80,9 +80,19 @@ static apr_status_t detect_scope_zone_id(int *have_zone_id, char const *ipv6addr
 
     *have_zone_id = 0;
 
-    if (len < 3) {
-        /* Need *at least* the three characters for a percent-encoded percent
-         * sign.
+    if (len < 3 + 5) {
+        /*
+         * We neeed *at least* the three characters for a percent-encoded
+         * percent sign. Furthermore scope id's are only allowed for link-local
+         * addresses under prefix fe80::/10.
+         */
+        return APR_SUCCESS;
+    }
+
+    if (strncasecmp(ipv6addr, "fe80:", 5)) {
+        /*
+         * Scope id's are only allowed for link-local addresses under prefix
+         * fe80::/10.
          */
         return APR_SUCCESS;
     }
@@ -124,7 +134,7 @@ static void percent_decode_scope_zone_id(char *hostname)
     memmove(hostname + offset + 1, hostname + offset + 3, len - offset - 2);
 }
 
-static char * percent_encode_scope_zone_id(apr_pool_t *p, apr_uri_t const *uptr)
+static char *percent_encode_scope_zone_id(apr_pool_t *p, apr_uri_t const *uptr)
 {
     /* Inverse to the logic in the decode function, we need to encode the first
      * percent sign we encounter (if any).
@@ -134,7 +144,11 @@ static char * percent_encode_scope_zone_id(apr_pool_t *p, apr_uri_t const *uptr)
     size_t offset;
     char *hostcopy;
 
-    if (s == NULL) {
+    if ((s == NULL) || strncasecmp(uptr->hostname, "fe80:", 5)) {
+        /*
+         * Scope id's are only allowed for link-local addresses under prefix
+         * fe80::/10.
+         */
         return uptr->hostname;
     }
 
@@ -945,9 +959,17 @@ deal_with_host:
          * unescape that.
          */
         if (*hostinfo == '[') {
+            apr_status_t err;
+
+            v6_offset1 = 1;
+            v6_offset2 = 2;
+            s = memchr(hostinfo, ']', uri - hostinfo);
+            if (s == NULL) {
+                return APR_EGENERAL;
+            }
+
             /* zone identifier */
-            apr_status_t err = detect_scope_zone_id(&have_zone_id, hostinfo,
-                                                    uri - hostinfo);
+            err = detect_scope_zone_id(&have_zone_id, hostinfo + 1, s - hostinfo - 1);
             /* FIXME: Ignore APR_EINVAL (invalid escaped character) for now as
              * old code may rely on it silently getting ignored?
              */
@@ -956,12 +978,6 @@ deal_with_host:
             }
 
             /* Port */
-            v6_offset1 = 1;
-            v6_offset2 = 2;
-            s = memchr(hostinfo, ']', uri - hostinfo);
-            if (s == NULL) {
-                return APR_EGENERAL;
-            }
             if (*++s != ':') {
                 s = NULL; /* no port */
             }
