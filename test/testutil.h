@@ -37,8 +37,6 @@
 
 #ifdef WIN32
 #define EXTENSION ".exe"
-#elif NETWARE
-#define EXTENSION ".nlm"
 #else
 #define EXTENSION
 #endif
@@ -67,6 +65,7 @@ void apr_assert_failure(abts_case* tc, const char *context,
 void initialize(void);
 
 abts_suite *testatomic(abts_suite *suite);
+abts_suite *testcharset(abts_suite *suite);
 abts_suite *testdir(abts_suite *suite);
 abts_suite *testdso(abts_suite *suite);
 abts_suite *testdup(abts_suite *suite);

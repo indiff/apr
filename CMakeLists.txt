@@ -120,6 +120,14 @@ if(APR_HAS_LDAP)
   set(LDAP_LIBRARIES wldap32)
 endif()
 
+if (CMAKE_C_BYTE_ORDER STREQUAL "BIG_ENDIAN")
+  set(APR_IS_BIGENDIAN 1)
+elseif (CMAKE_C_BYTE_ORDER STREQUAL "LITTLE_ENDIAN")
+  set(APR_IS_BIGENDIAN 0)
+else ()
+  message(FATAL_ERROR "Endianness could not be determined.")
+endif ()
+
 if(APR_POOL_DEBUG)
   add_compile_definitions(APR_POOL_DEBUG=1)
 endif()
@@ -417,6 +425,7 @@ set(APR_TEST_SUITES
   testbase64
   testbuckets
   testbuffer
+  testcharset
   testcond
   testcrypto
   testdate
@@ -617,24 +626,15 @@ if(APR_BUILD_TESTAPR)
   add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
 
   # copy data files to build directory so that we can run programs from there
-  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory 
-                  ${PROJECT_BINARY_DIR}/data)
-  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-                  ${PROJECT_SOURCE_DIR}/test/data/billion-laughs.xml
-                  ${PROJECT_BINARY_DIR}/data/billion-laughs.xml)
-  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-                  ${PROJECT_SOURCE_DIR}/test/data/file_datafile.txt
-                  ${PROJECT_BINARY_DIR}/data/file_datafile.txt)
-  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                  ${PROJECT_SOURCE_DIR}/test/data/mmap_datafile.txt
-                  ${PROJECT_BINARY_DIR}/data/mmap_datafile.txt)
-  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                  ${PROJECT_SOURCE_DIR}/test/data/mmap_large_datafile.txt
-                  ${PROJECT_BINARY_DIR}/data/mmap_large_datafile.txt)
+  file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/data)
+  file(COPY ${PROJECT_SOURCE_DIR}/test/data/billion-laughs.xml
+            ${PROJECT_SOURCE_DIR}/test/data/file_datafile.txt
+            ${PROJECT_SOURCE_DIR}/test/data/mmap_datafile.txt
+            ${PROJECT_SOURCE_DIR}/test/data/mmap_large_datafile.txt
+       DESTINATION ${PROJECT_BINARY_DIR}/data)
 
-  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                  ${PROJECT_SOURCE_DIR}/test/echoargs.bat
-                  ${PROJECT_BINARY_DIR}/echoargs.bat)
+  file(COPY ${PROJECT_SOURCE_DIR}/test/echoargs.bat
+       DESTINATION ${PROJECT_BINARY_DIR})
 
   add_executable(testapp test/testapp.c)
   target_link_libraries(testapp ${apr_libname} libaprapp-2)

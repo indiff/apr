@@ -45,10 +45,6 @@
 #include <string.h>
 #endif
 
-#ifdef BEOS
-#include <kernel/OS.h>
-#endif
-
 struct apr_other_child_rec_t {
     apr_pool_t *p;
     struct apr_other_child_rec_t *next;
@@ -57,7 +53,7 @@ struct apr_other_child_rec_t {
     void *data;
 };
 
-#if defined(WIN32) || defined(NETWARE)
+#if defined(WIN32)
 #define WSAHighByte 2
 #define WSALowByte 0
 #endif
