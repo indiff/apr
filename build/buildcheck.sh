@@ -43,7 +43,11 @@ fi
 if test -z "$libtool"; then
   libtool=`build/PrintPath glibtool1 glibtool libtool libtool15 libtool14`
 fi
-lt_pversion=`$libtool --version 2>/dev/null|sed -e 's/([^)]*)//g;s/^[^0-9]*//;s/[- ].*//g;q'`
+if test -z "$libtool"; then
+  libtool=`command -v libtoolize 2>/dev/null`
+fi
+# lt_pversion=`$libtool --version 2>/dev/null|sed -e 's/([^)]*)//g;s/^[^0-9]*//;s/[- ].*//g;q'`
+lt_pversion=`$libtool --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -1`
 if test -z "$lt_pversion"; then
   echo "buildconf: libtool not found."
   echo "           You need libtool version 1.4 or newer installed"
